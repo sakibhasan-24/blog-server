@@ -5,6 +5,7 @@ import { CustomRequest } from "../utils/validateUser";
 import appError from "../../error/appError";
 import { adminService } from "./admin.service";
 import sendResponse from "../utils/sendResponse";
+import Blog from "../blog/blog.model";
 
 const updateUser = catchAsync(async (req: CustomRequest, res) => {
   const { userId } = req.params;
@@ -43,10 +44,32 @@ const updateUser = catchAsync(async (req: CustomRequest, res) => {
     success: true,
     message: "User blocked successfully",
     statusCode: httpStatus.OK,
-    data: null,
   });
 });
 
+const deleteBlog = catchAsync(async (req: CustomRequest, res) => {
+  const { id } = req.params;
+  const adminUser = await User.findById(req.user._id);
+  if (!adminUser) {
+    throw new appError(httpStatus.NOT_FOUND, "User Not Found!");
+  }
+  if (adminUser?.role !== "admin") {
+    throw new appError(
+      httpStatus.UNAUTHORIZED,
+      "You are not allowed to delete"
+    );
+  }
+  const blog = await Blog.findByIdAndDelete(id);
+  if (!blog) {
+    throw new appError(httpStatus.NOT_FOUND, "Blog Not Found!");
+  }
+  sendResponse(res, {
+    success: true,
+    message: "Blog deleted successfully",
+    statusCode: httpStatus.OK,
+  });
+});
 export const adminController = {
   updateUser,
+  deleteBlog,
 };

@@ -1,3 +1,4 @@
+import Blog from "../blog/blog.model";
 import { TUser } from "../user/user.interface";
 import User from "../user/user.model";
 
@@ -9,6 +10,11 @@ const updateUserFromDb = async (id: string, updateData: Partial<TUser>) => {
   return result;
 };
 
+const deleteBlogByAdminFromDb = async (id: string) => {
+  const result = await Blog.findByIdAndDelete(id);
+  return result;
+};
 export const adminService = {
   updateUserFromDb,
+  deleteBlogByAdminFromDb,
 };

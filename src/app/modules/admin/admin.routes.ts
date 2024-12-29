@@ -12,4 +12,5 @@ router.patch(
 
   adminController.updateUser
 );
+router.delete("/blogs/:id", validateUser, adminController.deleteBlog);
 export const adminRoutes = router;
