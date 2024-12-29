@@ -68,7 +68,11 @@ const loginUserFromDb = async (payload: TLogin) => {
   }
   // create token
   // console.log(userExists);
-  const token = generateToken(userExists);
+  const tokenPayload = {
+    role: userExists?.role,
+    _id: userExists?._id,
+  };
+  const token = generateToken(tokenPayload);
   // console.log(token);
   if (!token) {
     throw new appError(httpStatus.BAD_REQUEST, "Something Went Wrong!");
