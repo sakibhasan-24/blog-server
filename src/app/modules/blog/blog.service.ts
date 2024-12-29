@@ -21,7 +21,13 @@ const updateBlogFromDb = async (blogId: string, updateBlog: Partial<TBlog>) => {
 
   return updatedBlog;
 };
+const deleteBlogFromDb = async (blogId: string) => {
+  console.log(blogId);
+  const result = await Blog.findByIdAndDelete({ _id: blogId });
+  return result;
+};
 export const blogServices = {
   createBlogIntoDb,
   updateBlogFromDb,
+  deleteBlogFromDb,
 };

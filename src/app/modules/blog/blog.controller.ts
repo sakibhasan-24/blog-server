@@ -74,7 +74,7 @@ const blogUpdate = catchAsync(async (req: CustomRequest, res) => {
       "You are not authorized to update this blog"
     );
   }
-  console.log(blog);
+  //   console.log(blog);
   //   update blog
   const updatedBlog = await blogServices.updateBlogFromDb(id, req.body);
   sendResponse(res, {
@@ -89,7 +89,33 @@ const blogUpdate = catchAsync(async (req: CustomRequest, res) => {
     },
   });
 });
+const deleteBlog = catchAsync(async (req: CustomRequest, res) => {
+  const { id } = req.params;
+  const { _id, role } = req?.user;
+  console.log(_id, role);
+  const blog = await Blog.findById({ _id: id });
+  //   console.log(blog);
+  if (!blog) {
+    throw new appError(httpStatus.NOT_FOUND, "Blog Not Found");
+  }
+
+  if (blog?.author?._id.toString() === _id) {
+    const deletedBlog = await blogServices.deleteBlogFromDb(id);
+    sendResponse(res, {
+      success: true,
+      message: "Blog Deleted Successfully",
+      statusCode: httpStatus.OK,
+      data: [],
+    });
+  } else {
+    throw new appError(
+      httpStatus.FORBIDDEN,
+      "You are not authorized to delete this blog"
+    );
+  }
+});
 export const blogController = {
   blogCreate,
   blogUpdate,
+  deleteBlog,
 };
