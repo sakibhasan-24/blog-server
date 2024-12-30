@@ -47,7 +47,7 @@ const getAllBlogsFromDB = async (query: QueryParams) => {
     searchQuery.author = filter;
   }
 
-  // Build the sort object
+
   const sortQuery: any = {};
   sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
 

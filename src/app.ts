@@ -15,5 +15,5 @@ app.use("/api", router);
 app.use(globalErrorHandler);
 app.use(notFound);
 export default app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello Blog World!");
 });
