@@ -1,6 +1,6 @@
 # Project Name
 
-Blog Project
+Blog Project : https://blog-server-wine-two.vercel.app/api/blogs
 
 ---
 
