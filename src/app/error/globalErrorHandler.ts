@@ -45,7 +45,7 @@ const globalErrorHandler = (
   else if (err.name === "NotFoundError" || err.statusCode === 404) {
     message = "Resource not found";
     errorDetails = "The requested resource does not exist.";
-    stackMessage = err.stack;
+    stackMessage = err?.stack;
   }
 
   // Handle Authentication Errors
@@ -64,7 +64,7 @@ const globalErrorHandler = (
     errorDetails = err.message || message;
     stackMessage = err.stack;
   } else if (err.details) {
-    errorDetails = err.details;
+    errorDetails = err?.details;
   }
 
   res.status(statusCode).json({
