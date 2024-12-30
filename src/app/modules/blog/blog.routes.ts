@@ -6,6 +6,7 @@ import validateUser from "../utils/validateUser";
 
 const router = express.Router();
 
+router.get("", blogController.getBlogs);
 router.post(
   "/",
   validateRequest(blogValidationSchema.blogSchemaZod),

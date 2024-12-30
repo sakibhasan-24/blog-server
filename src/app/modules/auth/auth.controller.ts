@@ -6,11 +6,12 @@ import config from "../../config";
 
 const registrationUser = catchAsync(async (req, res) => {
   const result = await authServices.registrationUserIntoDb(req.body);
+  const { password, ...userData } = result.toObject();
   sendResponse(res, {
     success: true,
     message: "User registered successfully",
     statusCode: httpStatus.OK,
-    data: result,
+    data: userData,
   });
 });
 const loginUser = catchAsync(async (req, res) => {

@@ -1,6 +1,6 @@
 # Project Name
 
-A brief description of your project.
+Blog Project
 
 ---
 
@@ -35,3 +35,12 @@ A brief description of your project.
 1. install necessary pacakge
 
 2. connect server and databace
+3. create API
+
+### Create Role
+
+- Create Admin and User
+
+1. Admin can block user and delete blogs
+
+2. User can create blog and delete his/her blog and update

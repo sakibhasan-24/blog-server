@@ -8,49 +8,64 @@ import User from "../user/user.model";
 import Blog from "./blog.model";
 
 const blogCreate = catchAsync(async (req: CustomRequest, res) => {
+  // console.log(req.user);
   const user = req?.user;
-  //   console.log(user);
+
   if (!user) {
     throw new appError(httpStatus.UNAUTHORIZED, "User not authenticated!");
   }
-  const { role, _id } = user.user;
+
+  const { role, _id } = user;
 
   if (role === "admin") {
     throw new appError(
       httpStatus.UNAUTHORIZED,
-      "You are Not allowed for create Blog!"
+      "Admins are not allowed to create blogs!"
     );
   }
-  if (role === "user") {
-    const result = await blogServices.createBlogIntoDb(req.body);
-    const author = await User.findById({ _id: _id }).select("-password").lean();
-    if (!author) {
-      throw new appError(
-        httpStatus.BAD_REQUEST,
-        "There is No User with this Id"
-      );
-    }
-    sendResponse(res, {
-      success: true,
-      message: "Blog Created Successfully",
-      statusCode: httpStatus.CREATED,
-      data: {
-        _id: result?._id,
-        title: result?.title,
-        content: result?.content,
-        author: author,
-      },
-    });
+
+  const { title, content } = req.body;
+  if (!title || !content) {
+    throw new appError(
+      httpStatus.BAD_REQUEST,
+      "Title and content are required!"
+    );
   }
+  const blogData = {
+    ...req.body,
+    author: _id,
+  };
+
+  const result = await blogServices.createBlogIntoDb(blogData);
+  console.log(result);
+
+  const author = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+  };
+
+  sendResponse(res, {
+    success: true,
+    message: "Blog created successfully!",
+    statusCode: httpStatus.CREATED,
+    data: {
+      _id: result._id,
+      title: result.title,
+      content: result.content,
+      author,
+    },
+  });
 });
 
 const blogUpdate = catchAsync(async (req: CustomRequest, res) => {
   // if user logged in or not
-  //   console.log(req.user);
+  // console.log(req.user);
   const { _id } = req?.user;
   const { id } = req.params;
-  //   console.log("req.user", _id);
+  console.log("req.params", id);
   const user = await User.findById(_id);
+  // console.log("user", user);
   if (!user || user?.isBlocked) {
     throw new appError(
       httpStatus.FORBIDDEN,
@@ -64,11 +79,11 @@ const blogUpdate = catchAsync(async (req: CustomRequest, res) => {
     "name email role isBlocked"
   );
   //   console;
-  console.log("blog", blog?.author);
+  console.log("blog", blog);
   if (!blog) {
     throw new appError(httpStatus.BAD_REQUEST, "No Blog Found");
   }
-  if (blog.author._id.toString() !== _id) {
+  if (blog?.author?._id.toString() !== _id) {
     throw new appError(
       httpStatus.FORBIDDEN,
       "You are not authorized to update this blog"
@@ -114,8 +129,34 @@ const deleteBlog = catchAsync(async (req: CustomRequest, res) => {
     );
   }
 });
+
+const getBlogs = catchAsync(async (req: CustomRequest, res) => {
+  const { search, sortBy, sortOrder, filter } = req.query;
+  const blogs = await blogServices.getAllBlogsFromDB({
+    search: search as string,
+    sortBy: sortBy as string,
+    sortOrder: sortOrder as "asc" | "desc",
+    filter: filter as string,
+  });
+  if (!blogs || blogs.length === 0) {
+    return sendResponse(res, {
+      success: true,
+      message: "No blogs found",
+      statusCode: httpStatus.OK,
+      data: [],
+    });
+  }
+  sendResponse(res, {
+    success: true,
+    message: "Blogs fetched successfully",
+    statusCode: httpStatus.OK,
+    data: blogs,
+  });
+});
+
 export const blogController = {
   blogCreate,
   blogUpdate,
   deleteBlog,
+  getBlogs,
 };
